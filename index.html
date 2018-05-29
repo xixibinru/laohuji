@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/base.css">
+  <title>Document</title>
+  <style>
+    body {
+      font-size: 24px;
+    }
+
+    #main {
+      width: 800px;
+      margin: 0 auto;
+    }
+
+    input[type="button"] {
+      color: #fff;
+      background-color: teal;
+      width: 60px;
+      line-height: 30px;
+      border-radius: 10px;
+    }
+
+    #main .control div {
+      float: left;
+    }
+
+    #main .control div:nth-of-type(3) {
+      float: right;
+    }
+
+    ul {
+      font-size: 0;
+    }
+
+    ul li {
+      float: left;
+      width: 33%;
+      text-align: center;
+    }
+
+    ul li img:nth-last-of-type(n+4) {
+      display: none;
+    }
+
+    ul li img {
+      margin: 0 auto;
+      display: block;
+      width: 100px;
+      height: 100px;
+    }
+
+    ul li img+img {
+      margin-top: 10px;
+    }
+
+    /* .carousel1-enter-active,
+    .carousel2-enter-active {
+      transform: translateX(0);
+      transition: transform 0.6s ease;
+    }
+
+    .carousel1-leave-active {
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .carousel2-leave-active {
+      transform: translateX(100%);
+      transition: transform 0.6s ease;
+    }
+
+    .carousel1-enter {
+      transform: translateX(100%);
+    }
+
+    .carousel2-enter {
+      transform: translateX(-100%);
+    }
+
+    .carousel1-leave,
+    .carousel2-leave {
+      transform: translateX(0);
+    } */
+
+    .ul li img{
+      transform: all 0.6s ease
+    }
+
+  </style>
+</head>
+
+<body>
+  <main id="main">
+    <div class="control clearfix">
+      <div> 已投硬币:
+        <input type="text">
+      </div>
+      <div>投币:
+        <input type="button" value="+100">
+        <input type="button" value="+1000">
+        <input type="button" value="+10000">
+      </div>
+      <div>
+        <input type="button" value="start" @click="animation_start">
+      </div>
+    </div>
+    <ul class="clearfix">
+      <li>
+        <img v-for="(item,index) in one" :key="'one'+index" :src="item.img" alt="">
+      </li>
+      <li>
+        <img v-for="(item,index) in two" :key="'two'+index" :src="item.img" alt="">
+      </li>
+      <li>
+        <img v-for="(item,index) in three" :key="'three'+index" :src="item.img" alt="">
+      </li>
+    </ul>
+    <ol>
+      <li></li>
+    </ol>
+    <h3>倍率说明</h3>
+    <p>瑞雯:1倍</p>
+    <p>剑姬:2倍</p>
+    <p>盖伦:4倍</p>
+    <p>saber:10倍</p>
+    <p>黑百合:20倍</p>
+    <p>dva:50倍</p>
+  </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script>
+  new Vue({
+    el: '#main',
+    data: {
+      coin: 0, //硬币
+      images: [{
+          id: 0,
+          tag: 0,
+          img: 'images/0.jpg'
+        }, {
+          id: 1,
+          tag: 1,
+          img: 'images/1.jpg'
+        },
+        {
+          id: 2,
+          tag: 2,
+          img: 'images/2.jpg'
+        },
+        {
+          id: 3,
+          tag: 3,
+          img: 'images/3.jpg'
+        },
+        {
+          id: 4,
+          tag: 4,
+          img: 'images/4.jpg'
+        },
+        {
+          id: 5,
+          tag: 5,
+          img: 'images/5.jpg'
+        }
+      ],
+      one: [], //one代表第一列 存放打乱后的图片
+      two: [],
+      three: [],
+      one_current: 0,
+      one_current: 1,
+      one_current: 2,
+      animate_status: '', //动画状态 animate_start 动画开始滚动 animate_end 动画结束
+      timer1: null,
+      timer2: null,
+      timer3: null,
+      // 根据倍率生成的数组
+      get arr() {
+        var arr = [];
+        arr.push.apply(arr, Array.apply(null, {
+          length: 100
+        }).map(function () {
+          return 1
+        }));
+        arr.push.apply(arr, Array.apply(null, {
+          length: 50
+        }).map(function () {
+          return 2
+        }));
+        arr.push.apply(arr, Array.apply(null, {
+          length: 25
+        }).map(function () {
+          return 3
+        }));
+        arr.push.apply(arr, Array.apply(null, {
+          length: 10
+        }).map(function () {
+          return 4
+        }));
+        arr.push.apply(arr, Array.apply(null, {
+          length: 5
+        }).map(function () {
+          return 5
+        }));
+        arr.push.apply(arr, Array.apply(null, {
+          length: 2
+        }).map(function () {
+          return 6
+        }));
+        return arr;
+      },
+      // 运行结果
+      result: []
+    },
+    methods: {
+      // 对出现的图片进行随机排序
+      mixImages: function () {
+        this.images.sort(function () {
+          return 0.5 - Math.random();
+        })
+        return JSON.parse(JSON.stringify(this.images));
+      },
+      //混淆每列老虎机
+      mix: function () {
+        this.one = this.mixImages();
+        this.two = this.mixImages();
+        this.three = this.mixImages();
+      },
+      random(min, max) {
+        return Math.floor(min + Math.random() * (max + 1));
+      },
+      //计算运行结果
+      run_result: function () {
+        for (let i = 0; i < 3; i++) {
+          this.result.push(this.arr[this.random(0, this.arr.length)]);
+        }
+      },
+      animation_start: function () {
+        var vm = this;
+        this.timer1 = setInterval(function(){
+          vm.one.unshit(vm.one.pop(vm[2]));
+        },1000/2);
+      }
+    },
+    compuetd: {},
+    created: function () {
+      this.mix();
+      console.log(this.arr);
+    }
+
+  })
+  console.log();
+</script>
+
+</html>
