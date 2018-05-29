@@ -52,6 +52,7 @@
       display: block;
       width: 100px;
       height: 100px;
+      transition: all 0.65s ease;
     }
 
     ul li img+img {
@@ -86,9 +87,19 @@
     .carousel2-leave {
       transform: translateX(0);
     } */
-
-    .ul li img{
-      transform: all 0.6s ease
+    .start-enter {
+      transform: translateY(-100%);
+    }
+    .start-enter-active {
+      transform: translateY(0);
+      transition: transform 0.6s ease;
+    }
+    .start-leave {
+      transform: translateY(0);
+    }
+    .start-leave-active {
+      transform: translateY(100%);
+      transition: transform 0.6s ease;
     }
 
   </style>
@@ -110,9 +121,9 @@
       </div>
     </div>
     <ul class="clearfix">
-      <li>
+      <transition-group tag="li" name="start">
         <img v-for="(item,index) in one" :key="'one'+index" :src="item.img" alt="">
-      </li>
+      </transition-group>
       <li>
         <img v-for="(item,index) in two" :key="'two'+index" :src="item.img" alt="">
       </li>
@@ -242,8 +253,9 @@
       animation_start: function () {
         var vm = this;
         this.timer1 = setInterval(function(){
-          vm.one.unshit(vm.one.pop(vm[2]));
+          vm.one.unshift(vm.one.pop(vm[2]));
         },1000/2);
+        console.log(this.one);
       }
     },
     compuetd: {},
